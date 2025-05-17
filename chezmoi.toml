@@ -1,0 +1,3 @@
+[default]
+prompt_style = "powerlevel10k" # atau "spaceship"
+p10k_style = "neon"            # atau "minimal"
