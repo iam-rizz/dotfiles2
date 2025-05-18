@@ -1,0 +1,8 @@
+{{- if eq .data.p10k_style "neon" }}
+{{ (include "config/styles/neon/p10k.zsh") | indent 0 }}
+{{- else if eq .data.p10k_style "minimal" }}
+{{ (include "config/styles/minimal/p10k.zsh") | indent 0 }}
+{{- else }}
+# Fallback
+{{ (include "config/styles/minimal/p10k.zsh") | indent 0 }}
+{{- end }}

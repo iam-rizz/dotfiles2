@@ -1,38 +1,9 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-export ZSH="$HOME/.oh-my-zsh"
-
-{{- if eq .prompt_style "spaceship" }}
-ZSH_THEME="spaceship"
-SPACESHIP_PROMPT_ORDER=(
-  user dir host git node docker package exec_time line_sep battery jobs exit_code char
-)
-{{- else if eq .prompt_style "powerlevel10k" }}
-ZSH_THEME="powerlevel10k/powerlevel10k"
-{{- if eq .p10k_style "minimal" }}
-[[ -f ~/.config/style/minimal.p10k.zsh ]] && source ~/.config/style/minimal.p10k.zsh
-{{- else if eq .p10k_style "neon" }}
-[[ -f ~/.config/style/neon.p10k.zsh ]] && source ~/.config/style/neon.p10k.zsh
-{{- else }}
-[[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-{{- end }}
-{{- else }}
-ZSH_THEME="robbyrussell"
-{{- end }}
-
-# Oh-My-Zsh
-source $ZSH/oh-my-zsh.sh
-
-# Plugin via zgen
+# Oh-My-Zsh & Plugins (Zgen)
 if ! zgen reset; then
   source "${HOME}/.zgen/zgen.zsh"
 
   zgen oh-my-zsh
 
-  # Oh-My-Zsh plugins
   zgen oh-my-zsh plugins/git
   zgen oh-my-zsh plugins/history-substring-search
   zgen oh-my-zsh plugins/sudo
@@ -54,7 +25,6 @@ if ! zgen reset; then
   zgen oh-my-zsh plugins/node
   zgen oh-my-zsh plugins/deno
 
-  # Custom plugins
   zgen load chriskempson/base16-shell
   zgen load djui/alias-tips
   zgen load marzocchi/zsh-notify
@@ -69,10 +39,13 @@ fi
 # Zoxide
 eval "$(zoxide init zsh)"
 
-# Custom Prompt Highlighting
+# Zsh Welcome Info
+[[ -f ~/.zsh_welcome ]] && source ~/.zsh_welcome
+
+# Autosuggest Color
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8"
 
-# Aliases
+# Alias
 alias ls='lsd'
 alias ll='lsd -l'
 alias la='lsd -la'
@@ -87,21 +60,18 @@ alias update='sudo apt update && sudo apt upgrade -y'
 alias ports='ss -tuln'
 alias reload!='source ~/.zshrc'
 
-#alias dps='docker ps --format "table {{.Names}} {{.Image}}      {{.Status}}"'
+alias dps='docker ps --format "table {{.Names}} {{.Image}}      {{.Status}}"'
 alias dexec='docker exec -it'
 alias dlogs='docker logs -f'
 alias drm='docker rm -f'
 alias dimg='docker images'
 alias drmi='docker rmi'
 
-# Editor dan Pager
+# Editor
 export EDITOR=nano
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
-# Zsh Welcome Info
-[[ -f ~/.zsh_welcome ]] && source ~/.zsh_welcome
-
-# Style Toggle (khusus powerlevel10k)
+# Toggle style (powerlevel10k: neon/minimal)
 toggle_p10k_style() {
   config="$HOME/.config/chezmoi/chezmoi.toml"
   current=$(grep 'p10k_style' "$config" | cut -d'"' -f2)
@@ -115,3 +85,18 @@ toggle_p10k_style() {
   chezmoi apply
 }
 alias style!='toggle_p10k_style'
+
+# Toggle prompt engine (spaceship <-> powerlevel10k)
+toggle_prompt_style() {
+  config="$HOME/.config/chezmoi/chezmoi.toml"
+  current=$(grep 'prompt_style' "$config" | cut -d'"' -f2)
+  if [[ "$current" == "powerlevel10k" ]]; then
+    sed -i 's/prompt_style = "powerlevel10k"/prompt_style = "spaceship"/' "$config"
+    echo "🚀 Switched to spaceship"
+  else
+    sed -i 's/prompt_style = "spaceship"/prompt_style = "powerlevel10k"/' "$config"
+    echo "🔮 Switched to powerlevel10k"
+  fi
+  chezmoi apply
+}
+alias promptstyle!='toggle_prompt_style'
