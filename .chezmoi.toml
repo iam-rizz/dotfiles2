@@ -1,0 +1,15 @@
+[data]
+  # Prompt theme options: "powerlevel10k" or "spaceship"
+  prompt_theme = "powerlevel10k"
+  # Powerlevel10k style options: "minimal" or "neon"
+  p10k_style = "minimal"
+
+[template]
+  extension = "tmpl"
+
+[merge]
+  command = "vimdiff"
+
+[git]
+  autoCommit = true
+  autoPush = false 

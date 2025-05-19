@@ -1,0 +1,80 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+export ZSH="$HOME/.oh-my-zsh"
+
+# Plugin configuration
+plugins=(
+  git
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  fzf
+  docker
+  npm
+  yarn
+  node
+)
+
+# Load Oh My Zsh
+source $ZSH/oh-my-zsh.sh
+
+# Prompt Theme Configuration
+{{ if eq .prompt_theme "powerlevel10k" }}
+  # Powerlevel10k configuration
+  ZSH_THEME="powerlevel10k/powerlevel10k"
+  {{ if eq .p10k_style "minimal" }}
+    [[ ! -f ~/.config/zsh/powerlevel10k/p10k.minimal.zsh ]] || source ~/.config/zsh/powerlevel10k/p10k.minimal.zsh
+  {{ else if eq .p10k_style "neon" }}
+    [[ ! -f ~/.config/zsh/powerlevel10k/p10k.neon.zsh ]] || source ~/.config/zsh/powerlevel10k/p10k.neon.zsh
+  {{ end }}
+{{ else if eq .prompt_theme "spaceship" }}
+  # Spaceship configuration
+  ZSH_THEME="spaceship"
+  SPACESHIP_PROMPT_ORDER=(
+    time          # Time stamps section
+    user          # Username section
+    dir           # Current directory section
+    host          # Hostname section
+    git           # Git section
+    node          # Node.js section
+    docker        # Docker section
+    line_sep      # Line break
+    char          # Prompt character
+  )
+  SPACESHIP_CHAR_SYMBOL="❯"
+  SPACESHIP_CHAR_SUFFIX=" "
+  SPACESHIP_PROMPT_ADD_NEWLINE=true
+  SPACESHIP_PROMPT_SEPARATE_LINE=true
+{{ end }}
+
+# Aliases
+alias ls='lsd'
+alias ll='lsd -l'
+alias la='lsd -la'
+alias cat='batcat'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias update='sudo apt update && sudo apt upgrade -y'
+alias ports='ss -tuln'
+alias reload!='source ~/.zshrc'
+
+# Docker aliases
+alias dps='docker ps --format "table {{.Names}} {{.Image}}      {{.Status}}"'
+alias dexec='docker exec -it'
+alias dlogs='docker logs -f'
+alias drm='docker rm -f'
+alias dimg='docker images'
+alias drmi='docker rmi'
+
+# Editor configuration
+export EDITOR=nano
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
+# Load additional configurations
+[[ -f ~/.zsh_welcome ]] && source ~/.zsh_welcome
